@@ -1,3 +1,4 @@
+from __future__ import print_function
 import os
 import logging
 import SocketServer
@@ -7,7 +8,7 @@ try:
     loglevel = int(os.getenv("E2KODI_DEBUG_LVL", logging.ERROR))
 except Exception:
     loglevel = logging.ERROR
-print "E2KODI_DEBUG_LVL = ", loglevel
+print("E2KODI_DEBUG_LVL = ", loglevel)
 
 logging.basicConfig(level=loglevel, format='%(name)s: %(message)s',)
 

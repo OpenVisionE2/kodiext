@@ -1,4 +1,5 @@
 # -*- encoding: utf-8 -*-
+from __future__ import print_function
 from Queue import Queue
 import json
 import os
@@ -194,7 +195,7 @@ def SaveDesktopInfo():
         _g_dh = getDesktop(0).size().height()
     except:
         _g_dw, _g_dh = 1280, 720
-    print "[XBMC] Desktop size [%dx%d]" % (_g_dw, _g_dh)
+    print("[XBMC] Desktop size [%dx%d]" % (_g_dw, _g_dh))
     if not fileExists('/tmp/dw.info'):
         os.system('touch /tmp/dw.info')
     os.system('chmod 755 /tmp/dw.info')
@@ -220,31 +221,31 @@ def fhd(num, factor=1.5):
 
 
 def FBLock():
-    print"[KodiLauncher] FBLock"
+    print("[KodiLauncher] FBLock")
     fbClass.getInstance().lock()
 
 
 def FBUnlock():
-    print "[KodiLauncher] FBUnlock"
+    print("[KodiLauncher] FBUnlock")
     fbClass.getInstance().unlock()
 
 
 def RCLock():
-    print "[KodiLauncher] RCLock"
+    print("[KodiLauncher] RCLock")
     eRCInput.getInstance().lock()
 
 
 def RCUnlock():
-    print "[KodiLauncher] RCUnlock"
+    print("[KodiLauncher] RCUnlock")
     eRCInput.getInstance().unlock()
 
 
 def kodiStopped(data, retval, extraArgs):
-    print '[KodiLauncher] kodi stopped: retval = %d' % retval
+    print('[KodiLauncher] kodi stopped: retval = %d' % retval)
 
 
 def kodiResumeStopped(data, retval, extraArgs):
-    print '[KodiLauncher] kodi resume script stopped: retval = %d' % retval
+    print('[KodiLauncher] kodi resume script stopped: retval = %d' % retval)
     if retval > 0:
         KODI_LAUNCHER.stop()
 #        <eLabel name="" position="1400,1020" size="445,45" text=" " font="RegularHD; 20"  backgroundColor="#001E1C1C"/>
@@ -882,15 +883,15 @@ class KodiLauncher(Screen):
                 for p in procs:
                     if 'kodi.bin' in p:
                         if kodiProc is not None:
-                            print '[KodiLauncher] startup - there are more kodi processes running!'
+                            print('[KodiLauncher] startup - there are more kodi processes running!')
                             return self.stop()
                         kodiProc = p.split()
             if kodiProc is not None:
                 kodiPid = int(kodiProc[0])
-                print "[KodiLauncher] startup: kodi is running, pid = %d , resuming..." % kodiPid
+                print("[KodiLauncher] startup: kodi is running, pid = %d , resuming..." % kodiPid)
                 self.resumeKodi(kodiPid)
             else:
-                print "[KodiLauncher] startup: kodi is not running, starting..."
+                print("[KodiLauncher] startup: kodi is not running, starting...")
                 self.startKodi()
 
         self._checkConsole = Console()
@@ -921,7 +922,7 @@ class KodiLauncher(Screen):
 
 
 def autoStart(reason, **kwargs):
-    print "[KodiLauncher] autoStart - reason = %d" % reason
+    print("[KodiLauncher] autoStart - reason = %d" % reason)
     global SERVER_THREAD
     global SERVER
     if reason == 0:
