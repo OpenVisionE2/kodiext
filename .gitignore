@@ -33,3 +33,6 @@ py-compile
 *.lo
 *.gcno
 *.gcda
+*.pyc
+*.pyo
+*.mo
