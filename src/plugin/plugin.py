@@ -18,21 +18,23 @@ from Screens.InfoBarGenerics import InfoBarNotifications, InfoBarSeek, \
     InfoBarAudioSelection, InfoBarShowHide, InfoBarSubtitleSupport
 from Screens.MessageBox import MessageBox
 from Screens.Screen import Screen
-from Tools.Directories import fileExists
+from Tools.Directories import fileExists, isPluginInstalled
 from Tools import Notifications
 
 from Components.config import config
-from Components.AVSwitch import iAVSwitch
+from Plugins.SystemPlugins.Videomode.VideoHardware import video_hw
 
 from e2utils import InfoBarAspectChange, WebPixmap, MyAudioSelection, \
     StatusScreen, getPlayPositionInSeconds, getDurationInSeconds, \
     InfoBarSubservicesSupport
 from enigma import eServiceReference, eTimer, ePythonMessagePump, \
     iPlayableService, fbClass, eRCInput, getDesktop, eDVBVolumecontrol
-from Components.SystemInfo import SystemInfo
+from Components.SystemInfo import BoxInfo, SystemInfo
 from server import KodiExtRequestHandler, UDSServer
 from Tools.BoundFunction import boundFunction
-from boxbranding import getMachineBrand
+
+brand = BoxInfo.getItem("brand")
+
 try:
     from Plugins.Extensions.SubsSupport import SubsSupport, SubsSupportStatus
 except ImportError:
@@ -155,7 +157,7 @@ class SetResolution:
         self.kodirate = "50Hz"
         self.port = config.av.videoport.value
         self.rate = None
-        if getMachineBrand() in ('Vu+', 'Formuler'):
+        if brand in ('vuplus', 'formuler'):
             resolutions = ("720i", "720p")
         else:
             resolutions = ("720i", "720p", "1080i", "1080p")
@@ -163,7 +165,7 @@ class SetResolution:
             for res in resolutions:
                 for rate in rates:
                     try:
-                        if iAVSwitch.isModeAvailable(self.port, res, rate):
+                        if video_hw.isModeAvailable(self.port, res, rate):
                             self.kodires = res
                             self.kodirate = rate
                     except:
@@ -172,11 +174,11 @@ class SetResolution:
     def switch(self, Tokodi=False, Player=False):
         if Tokodi:
             if self.kodires and self.kodirate and self.port:
-                iAVSwitch.setMode(self.port, self.kodires, self.kodirate)
+                video_hw.setMode(self.port, self.kodires, self.kodirate)
                 open("/proc/stb/video/videomode", "w").write(self.kodires + self.kodirate.replace("Hz", ""))
         else:
             if self.E2res and self.rate and self.port:
-	    	iAVSwitch.setMode(self.port, self.E2res, self.rate)
+	    	video_hw.setMode(self.port, self.E2res, self.rate)
 
     def ReadData(self):
         self.E2res = config.av.videomode[self.port].value
@@ -197,8 +199,8 @@ def SaveDesktopInfo():
         _g_dw, _g_dh = 1280, 720
     print("[XBMC] Desktop size [%dx%d]" % (_g_dw, _g_dh))
     if not fileExists('/tmp/dw.info'):
-        os.system('touch /tmp/dw.info')
-    os.system('chmod 755 /tmp/dw.info')
+        Console().ePopen('touch /tmp/dw.info')
+    Console().ePopen('chmod 755 /tmp/dw.info')
     open("/tmp/dw.info", "w").write(str(_g_dw) + "x" + str(_g_dh))
 
 
@@ -462,7 +464,7 @@ class KodiVideoPlayer(InfoBarBase, InfoBarShowHide, SubsSupportStatus, SubsSuppo
 
     def keyr(self):
 	try:
-		if fileExists("/usr/lib/enigma2/python/Plugins/Extensions/TimeSleep/plugin.pyo") or fileExists("/usr/lib/enigma2/python/Plugins/Extensions/TimeSleep/plugin.so"):
+		if isPluginInstalled("TimeSleep"):
 			from Plugins.Extensions.TimeSleep.plugin import timesleep
 			timesleep(self, True)
 		else:
@@ -472,7 +474,7 @@ class KodiVideoPlayer(InfoBarBase, InfoBarShowHide, SubsSupportStatus, SubsSuppo
 
     def keyl(self):
 	try:
-		if fileExists("/usr/lib/enigma2/python/Plugins/Extensions/TimeSleep/plugin.pyo") or fileExists("/usr/lib/enigma2/python/Plugins/Extensions/TimeSleep/plugin.so"):
+		if isPluginInstalled("TimeSleep"):
 			from Plugins.Extensions.TimeSleep.plugin import timesleep
 			timesleep(self, False)
 		else:
@@ -782,7 +784,7 @@ class E2KodiExtServer(UDSServer):
         RCUnlock()
 
         setaudio.switch(False, True)
-        if getMachineBrand() not in ('Vu+', 'Formuler'):
+        if brand not in ('vuplus', 'formuler'):
             setresolution.switch(False, True)
         # parse subtitles, play path and service type from data
         sType = 4097
@@ -848,7 +850,7 @@ class E2KodiExtServer(UDSServer):
 
     def kodiPlayerExitCB(self, callback=None):
         setaudio.switch(True, True)
-        if getMachineBrand() not in ('Vu+', 'Formuler'):
+        if brand not in ('vuplus', 'formuler'):
             setresolution.switch(True, True)
         SESSION.nav.stopService()
         self.kodiPlayer = None
@@ -913,9 +915,9 @@ class KodiLauncher(Screen):
             self.session.nav.playService(self.previousService)
         try:
             if os.path.exists('/media/hdd/.kodi/'):
-                os.system('rm -rf /media/hdd/kodi_crashlog*.log')
+                Console().ePopen('rm -rf /media/hdd/kodi_crashlog*.log')
             else:
-                os.system('rm -rf /tmp/kodi/kodi_crashlog*.log')
+                Console().ePopen('rm -rf /tmp/kodi/kodi_crashlog*.log')
         except:
             pass
         self.close()
