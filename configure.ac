@@ -9,6 +9,6 @@ Makefile
 src/Makefile
 src/kodiext/Makefile
 src/plugin/Makefile
-
+src/plugin/image/Makefile
 ])
 AC_OUTPUT
