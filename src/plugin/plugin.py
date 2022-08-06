@@ -1,5 +1,5 @@
+# -*- coding: utf-8 -*-
 # -*- encoding: utf-8 -*-
-from __future__ import print_function
 from Queue import Queue
 import json
 import os
