@@ -511,7 +511,7 @@ class KodiVideoPlayer(InfoBarBase, InfoBarShowHide, SubsSupportStatus, SubsSuppo
 
     def playService(self, sref):
 	if self.title_ref:
-        	sref.setName(self.title_ref.encode('utf-8'))
+            	sref.setName(self.title_ref.encode('utf-8'))
 
         self.session.nav.playService(sref)
 
